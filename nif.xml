@@ -1105,7 +1105,7 @@
         <option value="12000" name="BP_TORSOSECTION_RIGHTLEG3">Torso Section | Right Leg 3</option>
         <option value="13000" name="BP_TORSOSECTION_BRAIN">Torso Section | Brain</option>       
     </enum>
-	
+
     <enum name="BSLightingShaderPropertyShaderType" storage="uint" prefix="ST">
         Values for configuring the shader type in a BSLightingShaderProperty
         <option value="0" name="Default" />
@@ -1463,9 +1463,15 @@
     </compound>
 
     <compound name="ExportInfo">
-    	Information about how the file was exported
+        Information about how the file was exported
         <add name="Author" type="ShortString" />
         <add name="Process Script" type="ShortString" />
+        <add name="Export Script" type="ShortString" />
+    </compound>
+    <compound name="ExportInfo 2">
+        Information about how the file was exported
+        <add name="Author" type="ShortString" />
+        <add name="Unknown 4 Bytes" type="uint" />
         <add name="Export Script" type="ShortString" />
     </compound>
 
@@ -1480,8 +1486,10 @@
         <add name="Num Blocks" type="ulittle32" ver1="3.1.0.1">Number of file objects.</add>
         <!-- BSStreamHeader -->
         <add name="User Version 2" type="ulittle32" default="0" cond="(Version == 10.0.1.2) || ((Version == 20.2.0.7) || (Version == 20.0.0.5) || ((Version &gt;= 10.1.0.0) &amp;&amp; (Version &lt;= 20.0.0.4) &amp;&amp; (User Version &lt;= 11))) &amp;&amp; (User Version &gt;= 3)" />
-        <add name="Export Info" type="ExportInfo" cond="(Version == 10.0.1.2) || ((Version == 20.2.0.7) || (Version == 20.0.0.5) || ((Version &gt;= 10.1.0.0) &amp;&amp; (Version &lt;= 20.0.0.4) &amp;&amp; (User Version &lt;= 11))) &amp;&amp; (User Version &gt;= 3)" />
-        <add name="Max Filepath" type="ShortString" cond="(User Version 2 == 130)" />
+        <add name="Export Info" type="ExportInfo" cond="(Version == 10.0.1.2) || (Version == 20.0.0.5) || ((Version &gt;= 10.1.0.0) &amp;&amp; (Version &lt;= 20.0.0.4) &amp;&amp; (User Version &lt;= 11))) &amp;&amp; (User Version &gt;= 3)" />
+        <add name="Export Info" type="ExportInfo" cond="(Version == 20.2.0.7) &amp;&amp; (User Version 2 &lt;= 130)" />
+        <add name="Export Info 2" type="ExportInfo 2" cond="(Version == 20.2.0.7) &amp;&amp; (User Version 2 == 155)" />
+        <add name="Max Filepath" type="ShortString" cond="(User Version 2 &gt;= 130)" />
         <!-- / BSStreamHeader -->
         <add name="Metadata" type="ByteArray" ver1="30.0.0.0" />
         <add name="Num Block Types" type="ushort" ver1="5.0.0.1">Number of object types in this NIF file.</add>
@@ -1586,57 +1594,57 @@
         <add name="v2" type="ushort">Second vertex index.</add>
         <add name="v3" type="ushort">Third vertex index.</add>
     </compound>
-	
-	<bitflags name="VertexFlags" storage="ushort" prefix="VF">
-		<!-- First 4 bits are unused -->
-		<option value="4" name="Vertex" />          <!-- & 16 -->
-		<option value="5" name="UVs" />             <!-- & 32 -->
-		<option value="6" name="UVs_2" />           <!-- & 64 -->
-		<option value="7" name="Normals" />         <!-- & 128 -->
-		<option value="8" name="Tangents" />        <!-- & 256 -->
-		<option value="9" name="Vertex_Colors" />   <!-- & 512 -->
-		<option value="10" name="Skinned" />        <!-- & 1024 -->
-		<option value="11" name="Land_Data" />      <!-- & 2048 -->
-		<option value="12" name="Eye_Data" />       <!-- & 4096 -->
-		<option value="13" name="Instance" />       <!-- & 8192 -->
-		<option value="14" name="Full_Precision" /> <!-- & 16384 -->
-		<!-- Last bit unused -->
-	</bitflags>
     
-	<compound name="BSVertexData">
-		<add name="Vertex" type="HalfVector3" cond="((ARG &amp; 16) != 0) &amp;&amp; ((ARG &amp; 16384) == 0)" />
-		<add name="Bitangent X" type="hfloat" cond="((ARG &amp; 16) != 0) &amp;&amp; ((ARG &amp; 256) != 0) &amp;&amp; ((ARG &amp; 16384) == 0)" />
-		<add name="Unknown Short" type="ushort" cond="((ARG &amp; 16) != 0) &amp;&amp; ((ARG &amp; 256) == 0) &amp;&amp; ((ARG &amp; 16384) == 0)" />
-		
-		<add name="Vertex" type="Vector3" cond="((ARG &amp; 16) != 0) &amp;&amp; ((ARG &amp; 16384) != 0)" />
-		<add name="Bitangent X" type="float" cond="((ARG &amp; 16) != 0) &amp;&amp; ((ARG &amp; 256) != 0) &amp;&amp; ((ARG &amp; 16384) != 0)" />
-		<add name="Unknown Int" type="uint" cond="((ARG &amp; 16) != 0) &amp;&amp; ((ARG &amp; 256) == 0) &amp;&amp; ((ARG &amp; 16384) != 0)" />
-		
-		<add name="UV" type="HalfTexCoord" cond="((ARG &amp; 32) != 0)" />
-		<add name="Normal" type="ByteVector3" cond="(ARG &amp; 128) != 0" />
-		<add name="Bitangent Y" type="byte" cond="(ARG &amp; 128) != 0" />
-		<add name="Tangent" type="ByteVector3" cond="((ARG &amp; 128) != 0) &amp;&amp; ((ARG &amp; 256) != 0)" />
-		<add name="Bitangent Z" type="byte" cond="((ARG &amp; 128) != 0) &amp;&amp; ((ARG &amp; 256) != 0)" />
-		<add name="Vertex Colors" type="ByteColor4" cond="(ARG &amp; 512) != 0" />
-		<add name="Bone Weights" type="hfloat" arr1="4" cond="(ARG &amp; 1024) != 0" />
-		<add name="Bone Indices" type="byte" arr1="4" cond="(ARG &amp; 1024) != 0" />
-		<add name="Eye Data" type="float" cond="(ARG &amp; 4096) != 0" />
-	</compound>
+    <bitflags name="VertexFlags" storage="ushort" prefix="VF">
+        <!-- First 4 bits are unused -->
+        <option value="4" name="Vertex" />          <!-- & 16 -->
+        <option value="5" name="UVs" />             <!-- & 32 -->
+        <option value="6" name="UVs_2" />           <!-- & 64 -->
+        <option value="7" name="Normals" />         <!-- & 128 -->
+        <option value="8" name="Tangents" />        <!-- & 256 -->
+        <option value="9" name="Vertex_Colors" />   <!-- & 512 -->
+        <option value="10" name="Skinned" />        <!-- & 1024 -->
+        <option value="11" name="Land_Data" />      <!-- & 2048 -->
+        <option value="12" name="Eye_Data" />       <!-- & 4096 -->
+        <option value="13" name="Instance" />       <!-- & 8192 -->
+        <option value="14" name="Full_Precision" /> <!-- & 16384 -->
+        <!-- Last bit unused -->
+    </bitflags>
 
-	<compound name="BSVertexDataSSE">
-		<add name="Vertex" type="Vector3" cond="((ARG &amp; 16) != 0)" />
-		<add name="Bitangent X" type="float" cond="((ARG &amp; 16) != 0) &amp;&amp; ((ARG &amp; 256) != 0)" />
-		<add name="Unknown Int" type="int" cond="((ARG &amp; 16) != 0) &amp;&amp; (ARG &amp; 256) == 0" />
-		<add name="UV" type="HalfTexCoord" cond="((ARG &amp; 32) != 0)" />
-		<add name="Normal" type="ByteVector3" cond="(ARG &amp; 128) != 0" />
-		<add name="Bitangent Y" type="byte" cond="(ARG &amp; 128) != 0" />
-		<add name="Tangent" type="ByteVector3" cond="((ARG &amp; 128) != 0) &amp;&amp; ((ARG &amp; 256) != 0)" />
-		<add name="Bitangent Z" type="byte" cond="((ARG &amp; 128) != 0) &amp;&amp; ((ARG &amp; 256) != 0)" />
-		<add name="Vertex Colors" type="ByteColor4" cond="(ARG &amp; 512) != 0" />
-		<add name="Bone Weights" type="hfloat" arr1="4" cond="(ARG &amp; 1024) != 0" />
-		<add name="Bone Indices" type="byte" arr1="4" cond="(ARG &amp; 1024) != 0" />
-		<add name="Eye Data" type="float" cond="(ARG &amp; 4096) != 0" />
-	</compound>
+    <compound name="BSVertexData">
+        <add name="Vertex" type="HalfVector3" cond="((ARG &amp; 16) != 0) &amp;&amp; ((ARG &amp; 16384) == 0)" />
+        <add name="Bitangent X" type="hfloat" cond="((ARG &amp; 16) != 0) &amp;&amp; ((ARG &amp; 256) != 0) &amp;&amp; ((ARG &amp; 16384) == 0)" />
+        <add name="Unknown Short" type="ushort" cond="((ARG &amp; 16) != 0) &amp;&amp; ((ARG &amp; 256) == 0) &amp;&amp; ((ARG &amp; 16384) == 0)" />
+
+        <add name="Vertex" type="Vector3" cond="((ARG &amp; 16) != 0) &amp;&amp; ((ARG &amp; 16384) != 0)" />
+        <add name="Bitangent X" type="float" cond="((ARG &amp; 16) != 0) &amp;&amp; ((ARG &amp; 256) != 0) &amp;&amp; ((ARG &amp; 16384) != 0)" />
+        <add name="Unknown Int" type="uint" cond="((ARG &amp; 16) != 0) &amp;&amp; ((ARG &amp; 256) == 0) &amp;&amp; ((ARG &amp; 16384) != 0)" />
+
+        <add name="UV" type="HalfTexCoord" cond="((ARG &amp; 32) != 0)" />
+        <add name="Normal" type="ByteVector3" cond="(ARG &amp; 128) != 0" />
+        <add name="Bitangent Y" type="byte" cond="(ARG &amp; 128) != 0" />
+        <add name="Tangent" type="ByteVector3" cond="((ARG &amp; 128) != 0) &amp;&amp; ((ARG &amp; 256) != 0)" />
+        <add name="Bitangent Z" type="byte" cond="((ARG &amp; 128) != 0) &amp;&amp; ((ARG &amp; 256) != 0)" />
+        <add name="Vertex Colors" type="ByteColor4" cond="(ARG &amp; 512) != 0" />
+        <add name="Bone Weights" type="hfloat" arr1="4" cond="(ARG &amp; 1024) != 0" />
+        <add name="Bone Indices" type="byte" arr1="4" cond="(ARG &amp; 1024) != 0" />
+        <add name="Eye Data" type="float" cond="(ARG &amp; 4096) != 0" />
+    </compound>
+
+    <compound name="BSVertexDataSSE">
+        <add name="Vertex" type="Vector3" cond="((ARG &amp; 16) != 0)" />
+        <add name="Bitangent X" type="float" cond="((ARG &amp; 16) != 0) &amp;&amp; ((ARG &amp; 256) != 0)" />
+        <add name="Unknown Int" type="int" cond="((ARG &amp; 16) != 0) &amp;&amp; (ARG &amp; 256) == 0" />
+        <add name="UV" type="HalfTexCoord" cond="((ARG &amp; 32) != 0)" />
+        <add name="Normal" type="ByteVector3" cond="(ARG &amp; 128) != 0" />
+        <add name="Bitangent Y" type="byte" cond="(ARG &amp; 128) != 0" />
+        <add name="Tangent" type="ByteVector3" cond="((ARG &amp; 128) != 0) &amp;&amp; ((ARG &amp; 256) != 0)" />
+        <add name="Bitangent Z" type="byte" cond="((ARG &amp; 128) != 0) &amp;&amp; ((ARG &amp; 256) != 0)" />
+        <add name="Vertex Colors" type="ByteColor4" cond="(ARG &amp; 512) != 0" />
+        <add name="Bone Weights" type="hfloat" arr1="4" cond="(ARG &amp; 1024) != 0" />
+        <add name="Bone Indices" type="byte" arr1="4" cond="(ARG &amp; 1024) != 0" />
+        <add name="Eye Data" type="float" cond="(ARG &amp; 4096) != 0" />
+    </compound>
 
     <compound name="BSVertexDesc">
         <add name="VF1" type="byte" />
@@ -1670,9 +1678,9 @@
         <add name="Triangles" type="Triangle" arr1="Num Triangles" cond="(Has Faces) &amp;&amp; (Num Strips == 0)" ver1="10.1.0.0">The triangles.</add>
         <add name="Has Bone Indices" type="bool">Do we have bone indices?</add>
         <add name="Bone Indices" type="byte" arr1="Num Vertices" arr2="Num Weights Per Vertex" cond="Has Bone Indices">Bone indices, they index into 'Bones'.</add>
-		<add name="Unknown Short" type="ushort" vercond="User Version 2 &gt; 34">Unknown</add>
-		<add name="Vertex Desc" type="BSVertexDesc" ver="20.2.0.7" userver2="100" />
-		<add name="Triangles Copy" type="Triangle" arr1="Num Triangles" ver="20.2.0.7" userver2="100" />
+        <add name="Unknown Short" type="ushort" vercond="User Version 2 &gt; 34">Unknown</add>
+        <add name="Vertex Desc" type="BSVertexDesc" ver="20.2.0.7" userver2="100" />
+        <add name="Triangles Copy" type="Triangle" arr1="Num Triangles" ver="20.2.0.7" userver2="100" />
         <!-- related to the file posted in tracker item #3117836:
             http://sourceforge.net/tracker/?func=detail&aid=3117836&group_id=149157&atid=776343 -->
         <!--<add name="Unknown 83 C3" type="ushort" ver1="10.2.0.0" ver2="10.2.0.0" vercond="User Version == 1" ></add>
@@ -1720,21 +1728,21 @@
         <add name="Scale" type="float" default="1.0">Scaling part (only uniform scaling is supported).</add>
     </compound>
 
-	<bitflags name="FurnitureEntryPoints" storage="ushort">
-		Bethesda Animation. Furniture entry points. It specifies the direction(s) from where the actor is able to enter (and leave) the position.
-		<option value="0" name="Front">front entry point</option>
-		<option value="1" name="Behind">behind entry point</option>
-		<option value="2" name="Right">right entry point</option>
-		<option value="3" name="Left">left entry point</option>
-		<option value="4" name="Up">up entry point - unknown function. Used on some beds in Skyrim, probably for blocking of sleeping position.</option>
-	</bitflags>
+    <bitflags name="FurnitureEntryPoints" storage="ushort">
+        Bethesda Animation. Furniture entry points. It specifies the direction(s) from where the actor is able to enter (and leave) the position.
+        <option value="0" name="Front">front entry point</option>
+        <option value="1" name="Behind">behind entry point</option>
+        <option value="2" name="Right">right entry point</option>
+        <option value="3" name="Left">left entry point</option>
+        <option value="4" name="Up">up entry point - unknown function. Used on some beds in Skyrim, probably for blocking of sleeping position.</option>
+    </bitflags>
 
-	<enum name="AnimationType" storage="ushort">
-		Bethesda Animation. Animation type used on this position. This specifies the function of this position.
-		<option value="1" name="Sit">Actor use sit animation.</option>
-		<option value="2" name="Sleep">Actor use sleep animation.</option>
-		<option value="4" name="Lean">Used for lean animations?</option>
-	</enum>
+    <enum name="AnimationType" storage="ushort">
+        Bethesda Animation. Animation type used on this position. This specifies the function of this position.
+        <option value="1" name="Sit">Actor use sit animation.</option>
+        <option value="2" name="Sleep">Actor use sleep animation.</option>
+        <option value="4" name="Lean">Used for lean animations?</option>
+    </enum>
 
     <compound name="FurniturePosition">
         Bethesda Animation. Describes a furniture position?
@@ -1793,43 +1801,43 @@
         <add name="Layer" suffix="SK" type="SkyrimLayer" default="SKYL_STATIC" vercond="(Version == 20.2.0.7) &amp;&amp; (User Version 2 &gt; 34)">The layer the collision belongs to.</add>
 
         <add name="Flags and Part Number" type="byte" default="0">FLAGS are stored in highest 3 bits:
-        	Bit 7: sets the LINK property and controls whether this body is physically linked to others.
-        	Bit 6: turns collision off (not used for Layer BIPED).
-        	Bit 5: sets the SCALED property.
+            Bit 7: sets the LINK property and controls whether this body is physically linked to others.
+            Bit 6: turns collision off (not used for Layer BIPED).
+            Bit 5: sets the SCALED property.
 
-        	PART NUMBER is stored in bits 0-4. Used only when Layer is set to BIPED.
+            PART NUMBER is stored in bits 0-4. Used only when Layer is set to BIPED.
 
-        	Part Numbers for Oblivion, Fallout 3, Skyrim:
-        	0 - OTHER
-        	1 - HEAD
-        	2 - BODY
-        	3 - SPINE1
-        	4 - SPINE2
-        	5 - LUPPERARM
-        	6 - LFOREARM
-        	7 - LHAND
-        	8 - LTHIGH
-        	9 - LCALF
-        	10 - LFOOT
-        	11 - RUPPERARM
-        	12 - RFOREARM
-        	13 - RHAND
-        	14 - RTHIGH
-        	15 - RCALF
-        	16 - RFOOT
-        	17 - TAIL
-        	18 - SHIELD
-        	19 - QUIVER
-        	20 - WEAPON
-        	21 - PONYTAIL
-        	22 - WING
-        	23 - PACK
-        	24 - CHAIN
-        	25 - ADDONHEAD
-        	26 - ADDONCHEST
-        	27 - ADDONARM
-        	28 - ADDONLEG
-        	29-31 - NULL
+            Part Numbers for Oblivion, Fallout 3, Skyrim:
+            0 - OTHER
+            1 - HEAD
+            2 - BODY
+            3 - SPINE1
+            4 - SPINE2
+            5 - LUPPERARM
+            6 - LFOREARM
+            7 - LHAND
+            8 - LTHIGH
+            9 - LCALF
+            10 - LFOOT
+            11 - RUPPERARM
+            12 - RFOREARM
+            13 - RHAND
+            14 - RTHIGH
+            15 - RCALF
+            16 - RFOOT
+            17 - TAIL
+            18 - SHIELD
+            19 - QUIVER
+            20 - WEAPON
+            21 - PONYTAIL
+            22 - WING
+            23 - PACK
+            24 - CHAIN
+            25 - ADDONHEAD
+            26 - ADDONCHEST
+            27 - ADDONARM
+            28 - ADDONLEG
+            29-31 - NULL
         </add>
         <add name="Group" type="ushort" />
     </compound>
@@ -1951,7 +1959,7 @@
     </compound>
 
     <compound name="HingeDescriptor">
-    	This constraint allows rotation about a specified axis. 
+        This constraint allows rotation about a specified axis. 
         <!-- Oblivion -->
         <add name="Pivot A" type="Vector4" ver2="20.0.0.5">Pivot point around which the object will rotate.</add>
         <add name="Perp Axis In A1" type="Vector4" ver2="20.0.0.5">Vector in the rotation plane which defines the zero angle.</add>
@@ -2316,7 +2324,7 @@
         <add name="Linear Damping" type="float" default="0.1">Reduces the movement of the body over time. A value of 0.1 will remove 10% of the linear velocity every second.</add>
         <add name="Angular Damping" type="float" default="0.05">Reduces the movement of the body over time. A value of 0.05 will remove 5% of the angular velocity every second.</add>
         <add name="Time Factor" type="float" default="1.0" vercond="(User Version 2 &gt; 34)" />
-        <add name="Gravity Factor" type="float" default="1.0" vercond="(User Version 2 &gt; 34) &amp;&amp; (User Version 2 != 130)" />
+        <add name="Gravity Factor" type="float" default="1.0" vercond="(User Version 2 &gt; 34) &amp;&amp; (User Version 2 &lt; 130)" />
         <add name="Friction" type="float" default="0.5">How smooth its surfaces is and how easily it will slide along other bodies.</add>
         <add name="Rolling Friction Multiplier" type="float" vercond="(User Version 2 &gt; 34)" />
         <add name="Restitution" type="float" default="0.4">
@@ -2325,7 +2333,7 @@
         </add>
         <add name="Max Linear Velocity" type="float" default="104.4" ver1="10.1.0.0">Maximal linear velocity.</add>
         <add name="Max Angular Velocity" type="float" default="31.57" ver1="10.1.0.0">Maximal angular velocity.</add>
-        <add name="Penetration Depth" type="float" default="0.15" vercond="(User Version 2 != 130)" ver1="10.1.0.0">
+        <add name="Penetration Depth" type="float" default="0.15" vercond="(User Version 2 &lt; 130)" ver1="10.1.0.0">
             The maximum allowed penetration for this object.
             This is a hint to the engine to see how much CPU the engine should invest to keep this object from penetrating.
             A good choice is 5% - 20% of the smallest diameter of the object.
@@ -2335,12 +2343,12 @@
         <add name="Enable Deactivation" type="bool" default="1" vercond="(User Version 2 &gt; 34)" />
         <add name="Solver Deactivation" type="hkSolverDeactivation" default="SOLVER_DEACTIVATION_OFF">How aggressively the engine will try to zero the velocity for slow objects. This does not save CPU.</add>
         <add name="Quality Type" type="hkQualityType" default="MO_QUAL_FIXED">The type of interaction with other objects.</add>
-        <add name="Penetration Depth" type="float" default="0.15" vercond="(User Version 2 == 130)">
+        <add name="Penetration Depth" type="float" default="0.15" vercond="(User Version 2 &gt;= 130)">
             The maximum allowed penetration for this object.
             This is a hint to the engine to see how much CPU the engine should invest to keep this object from penetrating.
             A good choice is 5% - 20% of the smallest diameter of the object.
         </add>
-        <add name="Unknown Float 1" type="float" vercond="(User Version 2 == 130)" />
+        <add name="Unknown Float 1" type="float" vercond="(User Version 2 &gt;= 130)" />
         <add name="Unknown Bytes 1" type="byte" arr1="12">Unknown.</add>
         <add name="Unknown Bytes 2" type="byte" arr1="4" vercond="(User Version 2 &gt; 34)">Unknown. Skyrim only.</add>
         <add name="Num Constraints" type="uint" />
@@ -2699,7 +2707,7 @@
 
     <niobject name="NiObjectNET" abstract="1" inherit="NiObject">
         Abstract base class for NiObjects that support names, extra data, and time controllers.
-        <add name="Skyrim Shader Type" type="BSLightingShaderPropertyShaderType" vercond="User Version 2 &gt;= 83" cond="BSLightingShaderProperty">Configures the main shader path</add>
+        <add name="Skyrim Shader Type" type="BSLightingShaderPropertyShaderType" vercond="(User Version 2 &gt;= 83) &amp;&amp; (User Version 2 &lt;= 130)" cond="BSLightingShaderProperty">Configures the main shader path</add>
         <add name="Name" type="string">Name of this controllable object, used to refer to the object in .kf files.</add>
         <add name="Has Old Extra Data" type="bool" ver2="2.3">Extra data for pre-3.0 versions.</add>
         <add name="Old Extra Prop Name" cond="Has Old Extra Data" ver2="2.3" type="string">(=NiStringExtraData)</add>
@@ -3119,6 +3127,12 @@
         -->
         <!-- BSGeometry: Used by Bethesda Stream 100+ NiParticleSystem -->
         <add name="Bound" type="NiBound" vercond="(User Version 2 &gt;= 100)" cond="NiParticleSystem" />
+        <add name="Unknown Float 1" type="float" vercond="(User Version 2 == 155)" cond="NiParticleSystem" />
+        <add name="Unknown Float 2" type="float" vercond="(User Version 2 == 155)" cond="NiParticleSystem" />
+        <add name="Unknown Float 3" type="float" vercond="(User Version 2 == 155)" cond="NiParticleSystem" />
+        <add name="Unknown Float 4" type="float" vercond="(User Version 2 == 155)" cond="NiParticleSystem" />
+        <add name="Unknown Float 5" type="float" vercond="(User Version 2 == 155)" cond="NiParticleSystem" />
+        <add name="Unknown Float 6" type="float" vercond="(User Version 2 == 155)" cond="NiParticleSystem" />
         <add name="Skin" type="Ref" template="NiObject" vercond="(User Version 2 &gt;= 100)" cond="NiParticleSystem" />
         <!-- NiGeometry: Each row is doubled in order to exclude NiParticleSystem for Bethesda Stream 100+ -->
         <add name="Data" type="Ref" template="NiGeometryData" vercond="(User Version 2 &lt; 100)">Data index (NiTriShapeData/NiTriStripData).</add>
@@ -3365,6 +3379,11 @@
         Particle system data.
         <!-- `!((Version == 20.2.0.7) &amp;&amp; (User Version 2 &gt; 0))` means "Not Bethesda 20.2" -->
         <add name="Particle Descriptions" type="ParticleDesc" arr1="Num Vertices" vercond="!((Version == 20.2.0.7) &amp;&amp; (User Version 2 &gt; 0))" />
+
+        <add name="Unknown Float 1" type="float" vercond="(User Version 2 == 155)" />
+        <add name="Unknown Float 2" type="float" vercond="(User Version 2 == 155)" />
+        <add name="Unknown Float 3" type="float" vercond="(User Version 2 == 155)" />
+
         <add name="Has Rotation Speeds" type="bool" ver1="20.0.0.2" />
         <add name="Rotation Speeds" type="float" arr1="Num Vertices" cond="Has Rotation Speeds" ver1="20.0.0.2" vercond="!((Version == 20.2.0.7) &amp;&amp; (User Version 2 &gt; 0))" />
         <add name="Num Added Particles" type="ushort" vercond="!((Version == 20.2.0.7) &amp;&amp; (User Version 2 &gt; 0))" />
@@ -3482,9 +3501,9 @@
         <add name="Scale Offset" type="float" default="3.402823466e+38" />
         <add name="Scale Half Range" type="float" default="3.402823466e+38" />
     </niobject>
-	
-	<niobject name="BSRotAccumTransfInterpolator" inherit="NiTransformInterpolator">
-	</niobject>
+
+    <niobject name="BSRotAccumTransfInterpolator" inherit="NiTransformInterpolator">
+    </niobject>
 
     <niobject name="NiBSplineData" abstract="0" inherit="NiObject">
         Contains one or more sets of control points for use in interpolation of open, uniform B-Splines, stored as either float or compact.
@@ -4209,6 +4228,11 @@
         <add name="Rotation Speed Variation" type="float" ver1="20.0.0.2">Distributes rotation speed over the range [Speed - Variation, Speed + Variation].</add>
         <add name="Rotation Angle" type="float" ver1="20.0.0.2">Initial Rotation Angle in radians.</add>
         <add name="Rotation Angle Variation" type="float" ver1="20.0.0.2">Distributes rotation angle over the range [Angle - Variation, Angle + Variation].</add>
+        <add name="Unknown Byte" type="byte" vercond="(User Version 2 == 155)" />
+        <add name="Unknown Float" type="float" vercond="(User Version 2 == 155)" />
+        <add name="Unknown Float" type="float" vercond="(User Version 2 == 155)" />
+        <add name="Unknown Float" type="float" vercond="(User Version 2 == 155)" />
+        <add name="Unknown Float" type="float" vercond="(User Version 2 == 155)" />
         <add name="Random Rot Speed Sign" type="bool" ver1="20.0.0.2">Randomly negate the initial rotation speed?</add>
         <add name="Random Axis" type="bool" default="1">Assign a random axis to new particles?</add>
         <add name="Axis" type="Vector3" default="1.0, 0.0, 0.0">Initial rotation axis.</add>
@@ -4430,12 +4454,12 @@
     <niobject name="NiSkinPartition" abstract="0" inherit="NiObject">
         Skinning data, optimized for hardware skinning. The mesh is partitioned in submeshes such that each vertex of a submesh is influenced only by a limited and fixed number of bones.
         <add name="Num Skin Partition Blocks" type="uint" />
-		<add name="Skin Partition Blocks" type="SkinPartition" arr1="Num Skin Partition Blocks" vercond="!((Version == 20.2.0.7) &amp;&amp; (User Version 2 == 100))">Skin partition objects.</add>
-		<add name="Data Size" type="uint" ver="20.2.0.7" userver2="100" />
-		<add name="Vertex Size" type="uint" ver="20.2.0.7" userver2="100" />
-		<add name="Vertex Desc" type="BSVertexDesc" ver="20.2.0.7" userver2="100" />
-		<add name="Vertex Data" type="BSVertexDataSSE" arg="Vertex Desc\Vertex Attributes" arr1="Data Size / Vertex Size" cond="Data Size &gt; 0" ver="20.2.0.7" userver2="100" />
-		<add name="Partition" type="SkinPartition" arr1="Num Skin Partition Blocks" ver="20.2.0.7" userver2="100" />
+        <add name="Skin Partition Blocks" type="SkinPartition" arr1="Num Skin Partition Blocks" vercond="!((Version == 20.2.0.7) &amp;&amp; (User Version 2 == 100))">Skin partition objects.</add>
+        <add name="Data Size" type="uint" ver="20.2.0.7" userver2="100" />
+        <add name="Vertex Size" type="uint" ver="20.2.0.7" userver2="100" />
+        <add name="Vertex Desc" type="BSVertexDesc" ver="20.2.0.7" userver2="100" />
+        <add name="Vertex Data" type="BSVertexDataSSE" arg="Vertex Desc\Vertex Attributes" arr1="Data Size / Vertex Size" cond="Data Size &gt; 0" ver="20.2.0.7" userver2="100" />
+        <add name="Partition" type="SkinPartition" arr1="Num Skin Partition Blocks" ver="20.2.0.7" userver2="100" />
     </niobject>
 
     <niobject name="NiTexture" abstract="1" inherit="NiObjectNET">
@@ -5241,7 +5265,7 @@
         <option value="0" name="SHADER_TALL_GRASS">Tall Grass Shader</option>
         <option value="1" name="SHADER_DEFAULT">Standard Lighting Shader</option>
         <option value="10" name="SHADER_SKY">Sky Shader</option>
-		<option value="14" name="SHADER_SKIN">Skin Shader</option>
+        <option value="14" name="SHADER_SKIN">Skin Shader</option>
         <option value="17" name="SHADER_WATER">Water Shader</option>
         <option value="29" name="SHADER_LIGHTING30">Lighting 3.0 Shader</option>
         <option value="32" name="SHADER_TILE">Tiled Shader</option>
@@ -5358,29 +5382,29 @@
         This controller is used to animate float variables in BSEffectShaderProperty.
         <add name="Type of Controlled Variable" type="EffectShaderControlledVariable">Which float variable in BSEffectShaderProperty to animate:</add>
     </niobject>
-	
-	<niobject name="BSEffectShaderPropertyColorController" inherit="NiPoint3InterpController">
-		This controller is used to animate colors in BSEffectShaderProperty.
-		<add name="Type of Controlled Color" type="EffectShaderControlledColor">Which color in BSEffectShaderProperty to animate:</add>
-	</niobject>
-	
-	<niobject name="BSLightingShaderPropertyFloatController" abstract="0" inherit="NiFloatInterpController">
-		This controller is used to animate float variables in BSLightingShaderProperty.
-		<add name="Type of Controlled Variable" type="LightingShaderControlledVariable">Which float variable in BSLightingShaderProperty to animate:</add>
-	</niobject>
-	
-	<niobject name="BSLightingShaderPropertyColorController" abstract="0" inherit="NiPoint3InterpController">
-		This controller is used to animate colors in BSLightingShaderProperty.
-		<add name="Type of Controlled Color" type="LightingShaderControlledColor">Which color in BSLightingShaderProperty to animate:</add>
-	</niobject>	
-	
-	<niobject name="BSNiAlphaPropertyTestRefController" inherit="NiFloatInterpController" />
-	
-	<niobject name="BSProceduralLightningController" abstract="0" inherit="NiTimeController">
-    Skyrim, Paired with dummy TriShapes, this controller generates lightning shapes for special effects.
-    First interpolator controls Generation.
+
+    <niobject name="BSEffectShaderPropertyColorController" inherit="NiPoint3InterpController">
+        This controller is used to animate colors in BSEffectShaderProperty.
+        <add name="Type of Controlled Color" type="EffectShaderControlledColor">Which color in BSEffectShaderProperty to animate:</add>
+    </niobject>
+
+    <niobject name="BSLightingShaderPropertyFloatController" abstract="0" inherit="NiFloatInterpController">
+        This controller is used to animate float variables in BSLightingShaderProperty.
+        <add name="Type of Controlled Variable" type="LightingShaderControlledVariable">Which float variable in BSLightingShaderProperty to animate:</add>
+    </niobject>
+
+    <niobject name="BSLightingShaderPropertyColorController" abstract="0" inherit="NiPoint3InterpController">
+        This controller is used to animate colors in BSLightingShaderProperty.
+        <add name="Type of Controlled Color" type="LightingShaderControlledColor">Which color in BSLightingShaderProperty to animate:</add>
+    </niobject>
+
+    <niobject name="BSNiAlphaPropertyTestRefController" inherit="NiFloatInterpController" />
+
+    <niobject name="BSProceduralLightningController" abstract="0" inherit="NiTimeController">
+        Skyrim, Paired with dummy TriShapes, this controller generates lightning shapes for special effects.
+        First interpolator controls Generation.
         <add name="Interpolator 1: Generation" type="Ref" template="NiInterpolator">References generation interpolator.</add>
-		<add name="Interpolator 2: Mutation" type="Ref" template="NiInterpolator">References interpolator for Mutation of strips</add>
+        <add name="Interpolator 2: Mutation" type="Ref" template="NiInterpolator">References interpolator for Mutation of strips</add>
         <add name="Interpolator 3: Subdivision" type="Ref" template="NiInterpolator">References subdivision interpolator.</add>
         <add name="Interpolator 4: Num Branches" type="Ref" template="NiInterpolator">References branches interpolator.</add>
         <add name="Interpolator 5: Num Branches Var" type="Ref" template="NiInterpolator">References branches variation interpolator.</add>
@@ -5400,7 +5424,7 @@
         <add name="Fade Child Bolts" type="bool" />
         <add name="Animate Arc Offset" type="bool" />
         <add name="Shader Property" type="Ref" template="BSShaderProperty">Reference to a shader property.</add>
-	</niobject>
+    </niobject>
 
    <niobject name="BSShaderTextureSet" abstract="0" inherit="NiObject">
         Bethesda-specific Texture Set.
@@ -5612,40 +5636,71 @@
 
     <niobject name="BSLightingShaderProperty"  abstract="0" inherit="BSShaderProperty">
         Bethesda shader property for Skyrim and later.
-        <add name="Shader Flags 1" suffix="SK" type="SkyrimShaderPropertyFlags1" vercond="(User Version 2 != 130)" default="2185233153">Skyrim Shader Flags for setting render/shader options.</add>
-        <add name="Shader Flags 2" suffix="SK" type="SkyrimShaderPropertyFlags2" vercond="(User Version 2 != 130)" default="32801">Skyrim Shader Flags for setting render/shader options.</add>
+        <add name="Skyrim Shader Type" type="BSLightingShaderPropertyShaderType" vercond="(User Version 2 == 155)" cond="Name">Configures the main shader path</add>
+        <add name="Shader Flags 1" suffix="SK" type="SkyrimShaderPropertyFlags1" vercond="(User Version 2 &lt; 130)" default="2185233153">Skyrim Shader Flags for setting render/shader options.</add>
+        <add name="Shader Flags 2" suffix="SK" type="SkyrimShaderPropertyFlags2" vercond="(User Version 2 &lt; 130)" default="32801">Skyrim Shader Flags for setting render/shader options.</add>
         <add name="Shader Flags 1" suffix="FO4" type="Fallout4ShaderPropertyFlags1" vercond="(User Version 2 == 130)" default="2151678465">Fallout 4 Shader Flags. Mostly overridden if "Name" is a path to a BGSM/BGEM file.</add>
         <add name="Shader Flags 2" suffix="FO4" type="Fallout4ShaderPropertyFlags2" vercond="(User Version 2 == 130)" default="1">Fallout 4 Shader Flags. Mostly overridden if "Name" is a path to a BGSM/BGEM file.</add>
-        <add name="UV Offset" type="TexCoord">Offset UVs</add>
-        <add name="UV Scale" type="TexCoord" default="1.0, 1.0">Offset UV Scale to repeat tiling textures, see above.</add>
-        <add name="Texture Set" type="Ref" template="BSShaderTextureSet">Texture Set, can have override in an esm/esp</add>
-        <add name="Emissive Color" type="Color3" default="0.0, 0.0, 0.0">Glow color and alpha</add>
-        <add name="Emissive Multiple" type="float">Multiplied emissive colors</add>
+        <add name="Num Shader Flags 1" type="uint" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Num Shader Flags 2" type="uint" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Shader Flag Array 1" type="uint" arr1="Num Shader Flags 1" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Shader Flag Array 2" type="uint" arr1="Num Shader Flags 2" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="UV Offset" type="TexCoord" vercond="(User Version 2 &lt;= 130)">Offset UVs</add>
+        <add name="UV Offset" type="TexCoord" vercond="(User Version 2 == 155)" cond="Name">Offset UVs</add>
+        <add name="UV Scale" type="TexCoord" default="1.0, 1.0" vercond="(User Version 2 &lt;= 130)">Offset UV Scale to repeat tiling textures, see above.</add>
+        <add name="UV Scale" type="TexCoord" default="1.0, 1.0" vercond="(User Version 2 == 155)" cond="Name">Offset UV Scale to repeat tiling textures, see above.</add>
+        <add name="Texture Set" type="Ref" template="BSShaderTextureSet" vercond="(User Version 2 &lt;= 130)">Texture Set, can have override in an esm/esp</add>
+        <add name="Texture Set" type="Ref" template="BSShaderTextureSet" vercond="(User Version 2 == 155)" cond="Name">Texture Set, can have override in an esm/esp</add>
+        <add name="Emissive Color" type="Color3" default="0.0, 0.0, 0.0" vercond="(User Version 2 &lt;= 130)">Glow color and alpha</add>
+        <add name="Emissive Color" type="Color3" default="0.0, 0.0, 0.0" vercond="(User Version 2 == 155)" cond="Name">Glow color and alpha</add>
+        <add name="Emissive Multiple" type="float" vercond="(User Version 2 &lt;= 130)">Multiplied emissive colors</add>
+        <add name="Emissive Multiple" type="float" vercond="(User Version 2 == 155)" cond="Name">Multiplied emissive colors</add>
         <add name="Wet Material" type="string" vercond="(User Version 2 == 130)" />
-        <add name="Texture Clamp Mode" type="TexClampMode" default="3">How to handle texture borders.</add>
-        <add name="Alpha" type="float" default="1.0">The material opacity (1=non-transparent).</add>
-        <add name="Refraction Strength" type="float">The amount of distortion. **Not based on physically accurate refractive index** (0=none) (0-1)</add>
+        <add name="Wet Material" type="string" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Texture Clamp Mode" type="TexClampMode" default="3" vercond="(User Version 2 &lt;= 130)">How to handle texture borders.</add>
+        <add name="Texture Clamp Mode" type="TexClampMode" default="3" vercond="(User Version 2 == 155)" cond="Name">How to handle texture borders.</add>
+        <add name="Alpha" type="float" default="1.0" vercond="(User Version 2 &lt;= 130)">The material opacity (1=non-transparent).</add>
+        <add name="Alpha" type="float" default="1.0" vercond="(User Version 2 == 155)" cond="Name">The material opacity (1=non-transparent).</add>
+        <add name="Refraction Strength" type="float" vercond="(User Version 2 &lt;= 130)">The amount of distortion. **Not based on physically accurate refractive index** (0=none) (0-1)</add>
+        <add name="Refraction Strength" type="float" vercond="(User Version 2 == 155)" cond="Name">The amount of distortion. **Not based on physically accurate refractive index** (0=none) (0-1)</add>
         <add name="Glossiness" type="float" default="80" vercond="User Version 2 &lt; 130">The material specular power, or glossiness (0-999).</add>
         <add name="Smoothness" type="float" default="1.0" vercond="(User Version 2 == 130)">The base roughness (0.0-1.0), multiplied by the smoothness map.</add>
-        <add name="Specular Color" type="Color3">Adds a colored highlight.</add>
-        <add name="Specular Strength" type="float" default="1.0">Brightness of specular highlight. (0=not visible) (0-999)</add>
+        <add name="Smoothness" type="float" default="1.0" vercond="(User Version 2 == 155)" cond="Name">The base roughness (0.0-1.0), multiplied by the smoothness map.</add>
+        <add name="Specular Color" type="Color3" vercond="(User Version 2 &lt;= 130)">Adds a colored highlight.</add>
+        <add name="Specular Color" type="Color3" vercond="(User Version 2 == 155)" cond="Name">Adds a colored highlight.</add>
+        <add name="Specular Strength" type="float" default="1.0" vercond="(User Version 2 &lt;= 130)">Brightness of specular highlight. (0=not visible) (0-999)</add>
+        <add name="Specular Strength" type="float" default="1.0" vercond="(User Version 2 == 155)" cond="Name">Brightness of specular highlight. (0=not visible) (0-999)</add>
         <add name="Lighting Effect 1" type="float" default="0.3" vercond="User Version 2 &lt; 130">Controls strength for envmap/backlight/rim/softlight lighting effect?</add>
         <add name="Lighting Effect 2" type="float" default="2.0" vercond="User Version 2 &lt; 130">Controls strength for envmap/backlight/rim/softlight lighting effect?</add>
         <add name="Subsurface Rolloff" type="float" default="0.3" vercond="(User Version 2 == 130)" />
         <add name="Rimlight Power" type="float" default="3.402823466e+38" vercond="(User Version 2 == 130)" />
         <add name="Backlight Power" type="float" cond="Rimlight Power == 0x7F7FFFFF" vercond="(User Version 2 == 130)" />
         <add name="Grayscale to Palette Scale" type="float" vercond="(User Version 2 == 130)" />
+        <add name="Grayscale to Palette Scale" type="float" vercond="(User Version 2 == 155)" cond="Name" />
         <add name="Fresnel Power" type="float" default="5.0" vercond="(User Version 2 == 130)" />
+        <add name="Fresnel Power" type="float" default="5.0" vercond="(User Version 2 == 155)" cond="Name" />
         <add name="Wetness Spec Scale" type="float" default="-1.0" vercond="(User Version 2 == 130)" />
+        <add name="Wetness Spec Scale" type="float" default="-1.0" vercond="(User Version 2 == 155)" cond="Name" />
         <add name="Wetness Spec Power" type="float" default="-1.0" vercond="(User Version 2 == 130)" />
+        <add name="Wetness Spec Power" type="float" default="-1.0" vercond="(User Version 2 == 155)" cond="Name" />
         <add name="Wetness Min Var" type="float" default="-1.0" vercond="(User Version 2 == 130)" />
+        <add name="Wetness Min Var" type="float" default="-1.0" vercond="(User Version 2 == 155)" cond="Name" />
         <add name="Wetness Env Map Scale" type="float" default="-1.0" vercond="(User Version 2 == 130)" />
+        <add name="Wetness Env Map Scale" type="float" default="-1.0" vercond="(User Version 2 == 155)" cond="Name" />
         <add name="Wetness Fresnel Power" type="float" default="-1.0" vercond="(User Version 2 == 130)" />
+        <add name="Wetness Fresnel Power" type="float" default="-1.0" vercond="(User Version 2 == 155)" cond="Name" />
         <add name="Wetness Metalness" type="float" default="-1.0" vercond="(User Version 2 == 130)" />
+        <add name="Wetness Metalness" type="float" default="-1.0" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Unknown Float 1" type="float" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Unknown Float 2" type="float" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Unknown Float 3" type="float" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Unknown Float 4" type="float" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Unknown Float 5" type="float" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Unknown Short 1" type="ushort" vercond="(User Version 2 == 155)" cond="Name" />
         <add name="Environment Map Scale" type="float" default="1.0" cond="Skyrim Shader Type == 1">Scales the intensity of the environment/cube map. (0-1)</add>
-        <add name="Unknown Env Map Short" type="ushort" cond="Skyrim Shader Type == 1" vercond="(User Version 2 == 130)" />
+        <add name="Unknown Env Map Short" type="ushort" cond="Skyrim Shader Type == 1" vercond="(User Version 2 &gt;= 130)" />
         <add name="Skin Tint Color" type="Color3" cond="Skyrim Shader Type == 5">Tints the base texture. Overridden by game settings.</add>
-        <add name="Unknown Skin Tint Int" type="uint" cond="Skyrim Shader Type == 5" vercond="(User Version 2 == 130)" />
+        <add name="Unknown Skin Tint Int" type="uint" cond="Skyrim Shader Type == 5" vercond="(User Version 2 &gt;= 130)" />
         <add name="Hair Tint Color" type="Color3" cond="Skyrim Shader Type == 6">Tints the base texture. Overridden by game settings.</add>
         <add name="Max Passes" type="float" cond="Skyrim Shader Type == 7">Max Passes</add>
         <add name="Scale" type="float" cond="Skyrim Shader Type == 7">Scale</add>
@@ -5657,33 +5712,67 @@
         <add name="Eye Cubemap Scale" type="float" cond="Skyrim Shader Type == 16">Eye cubemap scale</add>
         <add name="Left Eye Reflection Center" type="Vector3" cond="Skyrim Shader Type == 16">Offset to set center for left eye cubemap</add>
         <add name="Right Eye Reflection Center" type="Vector3" cond="Skyrim Shader Type == 16">Offset to set center for right eye cubemap</add>
-    </niobject>
+     </niobject>
 
     <niobject name="BSEffectShaderProperty" abstract="0" inherit="BSShaderProperty">
         Bethesda effect shader property for Skyrim and later.
-        <add name="Shader Flags 1" suffix="SK" type="SkyrimShaderPropertyFlags1" default="2147483648" vercond="(User Version 2 != 130)" />
-        <add name="Shader Flags 2" suffix="SK" type="SkyrimShaderPropertyFlags2" default="32" vercond="(User Version 2 != 130)" />
+        <add name="Shader Flags 1" suffix="SK" type="SkyrimShaderPropertyFlags1" default="2147483648" vercond="(User Version 2 &lt; 130)" />
+        <add name="Shader Flags 2" suffix="SK" type="SkyrimShaderPropertyFlags2" default="32" vercond="(User Version 2 &lt; 130)" />
         <add name="Shader Flags 1" suffix="FO4" type="Fallout4ShaderPropertyFlags1" default="2147483648" vercond="(User Version 2 == 130)" />
         <add name="Shader Flags 2" suffix="FO4" type="Fallout4ShaderPropertyFlags2" default="32" vercond="(User Version 2 == 130)" />
-        <add name="UV Offset" type="TexCoord">Offset UVs</add>
-        <add name="UV Scale" type="TexCoord" default="1.0, 1.0">Offset UV Scale to repeat tiling textures</add>
-        <add name="Source Texture"  type="SizedString">points to an external texture.</add>
-        <add name="Texture Clamp Mode" type="byte">How to handle texture borders.</add>
-        <add name="Lighting Influence" type="byte" />
-        <add name="Env Map Min LOD" type="byte" />
-        <add name="Unknown Byte" type="byte" />
-        <add name="Falloff Start Angle" type="float" default="1.0">At this cosine of angle falloff will be equal to Falloff Start Opacity</add>
-        <add name="Falloff Stop Angle" type="float" default="1.0">At this cosine of angle falloff will be equal to Falloff Stop Opacity</add>
-        <add name="Falloff Start Opacity" type="float">Alpha falloff multiplier at start angle</add>
-        <add name="Falloff Stop Opacity" type="float">Alpha falloff multiplier at end angle</add>
-        <add name="Emissive Color" type="Color4">Emissive color</add>
-        <add name="Emissive Multiple" type="float">Multiplier for Emissive Color (RGB part)</add>
-        <add name="Soft Falloff Depth" type="float"></add>
-        <add name="Greyscale Texture"  type="SizedString">Points to an external texture, used as palette for SLSF1_Greyscale_To_PaletteColor/SLSF1_Greyscale_To_PaletteAlpha.</add>
+        <add name="Num Shader Flags 1" type="uint" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Num Shader Flags 2" type="uint" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Shader Flag Array 1" type="uint" arr1="Num Shader Flags 1" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Shader Flag Array 2" type="uint" arr1="Num Shader Flags 2" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="UV Offset" type="TexCoord" vercond="(User Version 2 &lt;= 130)">Offset UVs</add>
+        <add name="UV Offset" type="TexCoord" vercond="(User Version 2 == 155)" cond="Name">Offset UVs</add>
+        <add name="UV Scale" type="TexCoord" default="1.0, 1.0" vercond="(User Version 2 &lt;= 130)">Offset UV Scale to repeat tiling textures</add>
+        <add name="UV Scale" type="TexCoord" default="1.0, 1.0" vercond="(User Version 2 == 155)" cond="Name">Offset UV Scale to repeat tiling textures</add>
+        <add name="Source Texture"  type="SizedString" vercond="(User Version 2 &lt;= 130)">points to an external texture.</add>
+        <add name="Source Texture"  type="SizedString" vercond="(User Version 2 == 155)" cond="Name">points to an external texture.</add>
+        <add name="Texture Clamp Mode" type="byte" vercond="(User Version 2 &lt;= 130)">How to handle texture borders.</add>
+        <add name="Texture Clamp Mode" type="byte" vercond="(User Version 2 == 155)" cond="Name">How to handle texture borders.</add>
+        <add name="Lighting Influence" type="byte" vercond="(User Version 2 &lt;= 130)" />
+        <add name="Lighting Influence" type="byte" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Env Map Min LOD" type="byte" vercond="(User Version 2 &lt;= 130)" />
+        <add name="Env Map Min LOD" type="byte" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Unknown Byte" type="byte" vercond="(User Version 2 &lt;= 130)" />
+        <add name="Unknown Byte" type="byte" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Unknown Float" type="float" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Falloff Start Angle" type="float" default="1.0" vercond="(User Version 2 &lt;= 130)">At this cosine of angle falloff will be equal to Falloff Start Opacity</add>
+        <add name="Falloff Start Angle" type="float" default="1.0" vercond="(User Version 2 == 155)" cond="Name">At this cosine of angle falloff will be equal to Falloff Start Opacity</add>
+        <add name="Falloff Stop Angle" type="float" default="1.0" vercond="(User Version 2 &lt;= 130)">At this cosine of angle falloff will be equal to Falloff Stop Opacity</add>
+        <add name="Falloff Stop Angle" type="float" default="1.0" vercond="(User Version 2 == 155)" cond="Name">At this cosine of angle falloff will be equal to Falloff Stop Opacity</add>
+        <add name="Falloff Start Opacity" type="float" vercond="(User Version 2 &lt;= 130)">Alpha falloff multiplier at start angle</add>
+        <add name="Falloff Start Opacity" type="float" vercond="(User Version 2 == 155)" cond="Name">Alpha falloff multiplier at start angle</add>
+        <add name="Falloff Stop Opacity" type="float" vercond="(User Version 2 &lt;= 130)">Alpha falloff multiplier at end angle</add>
+        <add name="Falloff Stop Opacity" type="float" vercond="(User Version 2 == 155)" cond="Name">Alpha falloff multiplier at end angle</add>
+        <add name="Emissive Color" type="Color4" vercond="(User Version 2 &lt;= 130)">Emissive color</add>
+        <add name="Emissive Color" type="Color4" vercond="(User Version 2 == 155)" cond="Name">Emissive color</add>
+        <add name="Emissive Multiple" type="float" vercond="(User Version 2 &lt;= 130)">Multiplier for Emissive Color (RGB part)</add>
+        <add name="Emissive Multiple" type="float" vercond="(User Version 2 == 155)" cond="Name">Multiplier for Emissive Color (RGB part)</add>
+        <add name="Soft Falloff Depth" type="float" vercond="(User Version 2 &lt;= 130)"></add>
+        <add name="Soft Falloff Depth" type="float" vercond="(User Version 2 == 155)" cond="Name"></add>
+        <add name="Greyscale Texture"  type="SizedString" vercond="(User Version 2 &lt;= 130)">Points to an external texture, used as palette for SLSF1_Greyscale_To_PaletteColor/SLSF1_Greyscale_To_PaletteAlpha.</add>
+        <add name="Greyscale Texture"  type="SizedString" vercond="(User Version 2 == 155)" cond="Name">Points to an external texture, used as palette for SLSF1_Greyscale_To_PaletteColor/SLSF1_Greyscale_To_PaletteAlpha.</add>
         <add name="Env Map Texture" type="SizedString" vercond="(User Version 2 == 130)" />
+        <add name="Env Map Texture" type="SizedString" vercond="(User Version 2 == 155)" cond="Name" />
         <add name="Normal Texture" type="SizedString" vercond="(User Version 2 == 130)" />
+        <add name="Normal Texture" type="SizedString" vercond="(User Version 2 == 155)" cond="Name" />
         <add name="Env Mask Texture" type="SizedString" vercond="(User Version 2 == 130)" />
+        <add name="Env Mask Texture" type="SizedString" vercond="(User Version 2 == 155)" cond="Name" />
         <add name="Environment Map Scale" type="float" vercond="(User Version 2 == 130)" />
+        <add name="Environment Map Scale" type="float" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Specular Texture" type="SizedString" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Lighting Texture" type="SizedString" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Glow Texture" type="SizedString" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Unknown Float 1" type="float" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Unknown Float 2" type="float" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Unknown Float 3" type="float" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Unknown Float 4" type="float" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Unknown Float 5" type="float" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Unknown Float 6" type="float" vercond="(User Version 2 == 155)" cond="Name" />
+        <add name="Unknown Float 7" type="float" vercond="(User Version 2 == 155)" cond="Name" />
     </niobject>
     
     <bitflags name="SkyrimWaterShaderFlags" storage="byte">
@@ -5740,6 +5829,19 @@
         <add name="Color 2 End Percent" type="float" />
         <add name="Color 2 Start Percent" type="float" />
         <add name="Colors" type="Color4" arr1="3" />
+        <add name="Unknown" type="float" vercond="(User Version 2 == 155)" />
+        <add name="Unknown" type="float" vercond="(User Version 2 == 155)" />
+        <add name="Unknown" type="float" vercond="(User Version 2 == 155)" />
+        <add name="Unknown" type="float" vercond="(User Version 2 == 155)" />
+        <add name="Unknown" type="float" vercond="(User Version 2 == 155)" />
+        <add name="Unknown" type="float" vercond="(User Version 2 == 155)" />
+        <add name="Unknown" type="float" vercond="(User Version 2 == 155)" />
+        <add name="Unknown" type="float" vercond="(User Version 2 == 155)" />
+        <add name="Unknown" type="float" vercond="(User Version 2 == 155)" />
+        <add name="Unknown" type="float" vercond="(User Version 2 == 155)" />
+        <add name="Unknown" type="float" vercond="(User Version 2 == 155)" />
+        <add name="Unknown" type="float" vercond="(User Version 2 == 155)" />
+        <add name="Unknown" type="float" vercond="(User Version 2 == 155)" />
     </niobject>
 
 
@@ -5910,7 +6012,7 @@
     <niobject name="BSMultiBoundNode" inherit="NiNode">
         Bethesda-specific node.
         <add name="Multi Bound" type="Ref" template="BSMultiBound" />
-		<add name="Culling Mode" type="BSCPCullingType" vercond="(User Version 2 &gt;= 83)" />
+        <add name="Culling Mode" type="BSCPCullingType" vercond="(User Version 2 &gt;= 83)" />
     </niobject>
 
     <niobject name="BSMultiBound" inherit="NiObject">
@@ -5948,11 +6050,11 @@
         <add name="Flags" type="byte" vercond="(User Version 2 &lt; 130)" />
         <add name="Index" type="uint" vercond="(User Version 2 &lt; 130)">Index = previous Index + previous Num Tris in Segment * 3</add>
         <add name="Num Tris in Segment" type="uint" vercond="(User Version 2 &lt; 130)">The number of triangles belonging to this segment</add>
-        <add name="Start Index" type="uint" userver2="130" />
-        <add name="Num Primitives" type="uint" userver2="130" />
-        <add name="Parent Array Index" type="uint" userver2="130" />
-        <add name="Num Sub Segments" type="uint" userver2="130" />
-        <add name="Sub Segment" type="BSGeometrySubSegment" arr1="Num Sub Segments" userver2="130" />
+        <add name="Start Index" type="uint" vercond="User Version 2 &gt;= 130" />
+        <add name="Num Primitives" type="uint" vercond="User Version 2 &gt;= 130" />
+        <add name="Parent Array Index" type="uint" vercond="User Version 2 &gt;= 130" />
+        <add name="Num Sub Segments" type="uint" vercond="User Version 2 &gt;= 130" />
+        <add name="Sub Segment" type="BSGeometrySubSegment" arr1="Num Sub Segments" vercond="User Version 2 &gt;= 130" />
     </compound>
 
     <niobject name="BSSegmentedTriShape" inherit="NiTriShape">
@@ -6994,35 +7096,35 @@
 
     <niobject name="bhkCompressedMeshShapeData" inherit="bhkRefObject">
          A compressed mesh shape for collision in Skyrim.
-		<add name="Bits Per Index" type="uint">Number of bits in the shape-key reserved for a triangle index</add>
-		<add name="Bits Per W Index" type="uint">Number of bits in the shape-key reserved for a triangle index and its winding</add>
-		<add name="Mask W Index" type="uint">Mask used to get the triangle index and winding from a shape-key (common: 262143 = 0x3ffff)</add>
-		<add name="Mask Index" type="uint">Mask used to get the triangle index from a shape-key (common: 131071 = 0x1ffff)</add>
-		<add name="Error" type="float">The radius of the storage mesh shape? Quantization error?</add>
-		<add name="Bounds Min" type="Vector4">The minimum boundary of the AABB (the coordinates of the corner with the lowest numerical values)</add>
-		<add name="Bounds Max" type="Vector4">The maximum boundary of the AABB (the coordinates of the corner with the highest numerical values)</add>
-		<add name="Welding Type" type="byte" />
-		<add name="Material Type" type="byte" />
-		<add name="Num Materials 32" type="uint" />
-		<add name="Materials 32" type="uint" arr1="Num Materials 32">Does not appear to be used.</add>
-		<add name="Num Materials 16" type="uint" />
-		<add name="Materials 16" type="uint" arr1="Num Materials 16">Does not appear to be used.</add>
-		<add name="Num Materials 8" type="uint" />
-		<add name="Materials 8" type="uint" arr1="Num Materials 8">Does not appear to be used.</add>
-		<add name="Num Materials" type="uint">Number of chunk materials</add>
-		<add name="Chunk Materials" type="bhkCMSDMaterial" arr1="Num Materials">Table (array) with sets of materials. Chunks refers to this table by index.</add>
-		<add name="Num Named Materials" type="uint" />
-		<add name="Num Transforms" type="uint">Number of chunk transformations</add>
+        <add name="Bits Per Index" type="uint">Number of bits in the shape-key reserved for a triangle index</add>
+        <add name="Bits Per W Index" type="uint">Number of bits in the shape-key reserved for a triangle index and its winding</add>
+        <add name="Mask W Index" type="uint">Mask used to get the triangle index and winding from a shape-key (common: 262143 = 0x3ffff)</add>
+        <add name="Mask Index" type="uint">Mask used to get the triangle index from a shape-key (common: 131071 = 0x1ffff)</add>
+        <add name="Error" type="float">The radius of the storage mesh shape? Quantization error?</add>
+        <add name="Bounds Min" type="Vector4">The minimum boundary of the AABB (the coordinates of the corner with the lowest numerical values)</add>
+        <add name="Bounds Max" type="Vector4">The maximum boundary of the AABB (the coordinates of the corner with the highest numerical values)</add>
+        <add name="Welding Type" type="byte" />
+        <add name="Material Type" type="byte" />
+        <add name="Num Materials 32" type="uint" />
+        <add name="Materials 32" type="uint" arr1="Num Materials 32">Does not appear to be used.</add>
+        <add name="Num Materials 16" type="uint" />
+        <add name="Materials 16" type="uint" arr1="Num Materials 16">Does not appear to be used.</add>
+        <add name="Num Materials 8" type="uint" />
+        <add name="Materials 8" type="uint" arr1="Num Materials 8">Does not appear to be used.</add>
+        <add name="Num Materials" type="uint">Number of chunk materials</add>
+        <add name="Chunk Materials" type="bhkCMSDMaterial" arr1="Num Materials">Table (array) with sets of materials. Chunks refers to this table by index.</add>
+        <add name="Num Named Materials" type="uint" />
+        <add name="Num Transforms" type="uint">Number of chunk transformations</add>
         <add name="Chunk Transforms" type="bhkCMSDTransform" arr1="Num Transforms">Table (array) with sets of transformations. Chunks refers to this table by index.</add>
-		<add name="Num Big Verts" type="uint" />
-		<add name="Big Verts" type="Vector4" arr1="Num Big Verts">Compressed Vertices?</add>
+        <add name="Num Big Verts" type="uint" />
+        <add name="Big Verts" type="Vector4" arr1="Num Big Verts">Compressed Vertices?</add>
         <add name="Num Big Tris" type="uint" />
         <add name="Big Tris" type="bhkCMSDBigTris" arr1="Num Big Tris" />
         <add name="Num Chunks" type="uint" />
         <add name="Chunks" type="bhkCMSDChunk" arr1="Num Chunks" />
         <add name="Num Convex Piece A" type="uint">Does not appear to be used. Needs array.</add>
-	</niobject>
-	
+    </niobject>
+
     <!-- Skyrim specific blocks -->
     <niobject name="BSInvMarker" abstract="0" inherit="NiExtraData">
     Orientation marker for Skyrim's inventory view.
@@ -7038,36 +7140,36 @@
         <add name="Zoom" type="float" default="1.0">Zoom factor.</add>
     </niobject>
 
-	<niobject name="BSBoneLODExtraData" inherit="NiExtraData">
+    <niobject name="BSBoneLODExtraData" inherit="NiExtraData">
     Unknown
-		<add name="BoneLOD Count" type="uint">Number of bone entries</add>
+        <add name="BoneLOD Count" type="uint">Number of bone entries</add>
         <add name="BoneLOD Info" type="BoneLOD" arr1="BoneLOD Count">Bone Entry</add>
-	</niobject>
-	
-	<niobject name="BSBehaviorGraphExtraData" inherit="NiExtraData">
+    </niobject>
+
+    <niobject name="BSBehaviorGraphExtraData" inherit="NiExtraData">
     Links a nif with a Havok Behavior .hkx animation file
-		<add name="Behaviour Graph File" type="string">Name of the hkx file.</add>
-		<add name="Controls Base Skeleton" type="bool">Unknown, has to do with blending appended bones onto an actor.</add>
-	</niobject>
+        <add name="Behaviour Graph File" type="string">Name of the hkx file.</add>
+        <add name="Controls Base Skeleton" type="bool">Unknown, has to do with blending appended bones onto an actor.</add>
+    </niobject>
 
-	<niobject name="BSLagBoneController" inherit="NiTimeController">
+    <niobject name="BSLagBoneController" inherit="NiTimeController">
     A controller that trails a bone behind an actor.
-		<add name="Linear Velocity" type="float">How long it takes to rotate about an actor back to rest position.</add>
-		<add name="Linear Rotation" type="float">How the bone lags rotation</add>
-		<add name="Maximum Distance" type="float">How far bone will tail an actor.</add>
-	</niobject>
+        <add name="Linear Velocity" type="float">How long it takes to rotate about an actor back to rest position.</add>
+        <add name="Linear Rotation" type="float">How the bone lags rotation</add>
+        <add name="Maximum Distance" type="float">How far bone will tail an actor.</add>
+    </niobject>
 
-	<niobject name="BSLODTriShape" inherit="NiTriBasedGeom">
-		A variation on NiTriShape, for visibility control over vertex groups.
-		<add name="LOD0 Size" type="uint" />
-		<add name="LOD1 Size" type="uint" />
-		<add name="LOD2 Size" type="uint" />
-	</niobject>
+    <niobject name="BSLODTriShape" inherit="NiTriBasedGeom">
+        A variation on NiTriShape, for visibility control over vertex groups.
+        <add name="LOD0 Size" type="uint" />
+        <add name="LOD1 Size" type="uint" />
+        <add name="LOD2 Size" type="uint" />
+    </niobject>
 
-	<niobject name="BSFurnitureMarkerNode" inherit="BSFurnitureMarker">
+    <niobject name="BSFurnitureMarkerNode" inherit="BSFurnitureMarker">
         Furniture Marker for actors
     </niobject>
-	
+
     <niobject name="BSLeafAnimNode" inherit="NiNode">
         Unknown, related to trees.
     </niobject>
@@ -7086,20 +7188,22 @@
     <niobject name="BSTriShape" abstract="0" inherit="NiAVObject">
         Fallout 4 Tri Shape
         <add name="Bounding Sphere" type="NiBound" />
+        <add name="Center?" type="Vector3" vercond="(User Version 2 == 155)">Center of Bounding Box?</add>
+        <add name="Extent?" type="Vector3" vercond="(User Version 2 == 155)">Extents of Bounding Box?</add>
         <add name="Skin" type="Ref" template="NiObject" />
         <add name="Shader Property" type="Ref" template="BSShaderProperty" />
         <add name="Alpha Property" type="Ref" template="NiAlphaProperty" />
         <add name="Vertex Desc" type="BSVertexDesc" />
-        <add name="Num Triangles" type="uint" userver2="130" />
-        <add name="Num Triangles" type="ushort" vercond="User Version 2 &lt; 130" />
+        <add name="Num Triangles" type="uint" vercond="(User Version 2 &gt;= 130)" />
+        <add name="Num Triangles" type="ushort" vercond="(User Version 2 &lt; 130)" />
         <add name="Num Vertices" type="ushort" />
         <add name="Data Size" type="uint" />
-        <add name="Vertex Data" type="BSVertexData" arr1="Num Vertices" arg="Vertex Desc\Vertex Attributes" cond="Data Size &gt; 0" userver2="130" />
-        <add name="Vertex Data" type="BSVertexDataSSE" arr1="Num Vertices" arg="Vertex Desc\Vertex Attributes" cond="Data Size &gt; 0" userver2="100" />
+        <add name="Vertex Data" type="BSVertexData" arr1="Num Vertices" arg="Vertex Desc\Vertex Attributes" cond="Data Size &gt; 0" vercond="(User Version 2 &gt;= 130)" />
+        <add name="Vertex Data" type="BSVertexDataSSE" arr1="Num Vertices" arg="Vertex Desc\Vertex Attributes" cond="Data Size &gt; 0" vercond="(User Version 2 &lt;= 100)" />
         <add name="Triangles" type="Triangle" arr1="Num Triangles" cond="Data Size &gt; 0" />
-        <add name="Particle Data Size" type="uint" userver2="100" />
-        <add name="Vertices" type="Vector3" arr1="Num Vertices" cond="Particle Data Size &gt; 0" userver2="100" />
-        <add name="Triangles Copy" type="Triangle" arr1="Num Triangles" cond="Particle Data Size &gt; 0" userver2="100" />
+        <add name="Particle Data Size" type="uint" vercond="(User Version 2 &lt;= 100)" />
+        <add name="Vertices" type="Vector3" arr1="Num Vertices" cond="Particle Data Size &gt; 0" vercond="(User Version 2 &lt;= 100)" />
+        <add name="Triangles Copy" type="Triangle" arr1="Num Triangles" cond="Particle Data Size &gt; 0" vercond="(User Version 2 &lt;= 100)" />
     </niobject>
 
     <niobject name="BSMeshLODTriShape" inherit="BSTriShape">
@@ -7128,13 +7232,13 @@
 
     <niobject name="BSSubIndexTriShape" inherit="BSTriShape">
         Fallout 4 Sub-Index Tri Shape
-		<add name="Num Primitives" type="uint" userver2="130" cond="Data Size &gt; 0" />
-		<add name="Num Segments" type="uint" userver2="130" cond="Data Size &gt; 0" />
-		<add name="Total Segments" type="uint" userver2="130" cond="Data Size &gt; 0" />
-		<add name="Segment" type="BSGeometrySegmentData" userver2="130" arr1="Num Segments" cond="Data Size &gt; 0" />
-		<add name="Segment Data" type="BSGeometrySegmentSharedData" userver2="130" cond="(Num Segments &lt; Total Segments) &amp;&amp; (Data Size &gt; 0)" />
-		<add name="Num Segments" type="uint" userver2="100" />
-		<add name="Segment" type="BSGeometrySegmentData" userver2="100" arr1="Num Segments" />
+        <add name="Num Primitives" type="uint" vercond="User Version 2 &gt;= 130" cond="Data Size &gt; 0" />
+        <add name="Num Segments" type="uint" vercond="User Version 2 &gt;= 130" cond="Data Size &gt; 0" />
+        <add name="Total Segments" type="uint" vercond="User Version 2 &gt;= 130" cond="Data Size &gt; 0" />
+        <add name="Segment" type="BSGeometrySegmentData" vercond="User Version 2 &gt;= 130" arr1="Num Segments" cond="Data Size &gt; 0" />
+        <add name="Segment Data" type="BSGeometrySegmentSharedData" vercond="User Version 2 &gt;= 130" cond="(Num Segments &lt; Total Segments) &amp;&amp; (Data Size &gt; 0)" />
+        <add name="Num Segments" type="uint" userver2="100" />
+        <add name="Segment" type="BSGeometrySegmentData" userver2="100" arr1="Num Segments" />
     </niobject>
     
     <!-- Fallout 4 Physics -->
@@ -7230,7 +7334,7 @@
         <add name="Num Data" type="int" />
         <add name="Data" type="float" arr1="Num Data" />
     </niobject>
-	
+
     <compound name="BSPackedGeomDataCombined">
         <add name="Grayscale to Palette Scale" type="float" />
         <add name="Transform" type="NiTransform" />
@@ -7304,17 +7408,17 @@
     <niobject name="NiLightRadiusController" inherit="NiFloatInterpController">
     
     </niobject>
-	
-	<!-- Skyrim SE --> 
 
-	<niobject name="BSDynamicTriShape" inherit="BSTriShape">
-		<add name="Vertex Data Size" type="uint" />
-		<add name="Vertices" type="Vector4" arr1="Num Vertices" cond="Vertex Data Size &gt; 0" />
-	</niobject>
-	
-	<niobject name="BSDistantObjectLargeRefExtraData" abstract="0" inherit="NiExtraData">
+    <!-- Skyrim SE -->
+
+    <niobject name="BSDynamicTriShape" inherit="BSTriShape">
+        <add name="Vertex Data Size" type="uint" />
+        <add name="Vertices" type="Vector4" arr1="Num Vertices" cond="Vertex Data Size &gt; 0" />
+    </niobject>
+
+    <niobject name="BSDistantObjectLargeRefExtraData" abstract="0" inherit="NiExtraData">
         Large ref flag.
-		<add name="Large Ref" type="bool" />
-	</niobject>
-	
+        <add name="Large Ref" type="bool" />
+    </niobject>
+
 </niftoolsxml>
