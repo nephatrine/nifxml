@@ -5737,7 +5737,7 @@
         <add name="Shader Flags 1" suffix="FO4" type="Fallout4ShaderPropertyFlags1" vercond="(User Version 2 &gt;= 130) &amp;&amp; (User Version 2 &lt; 132)" default="2151678465">Fallout 4 Shader Flags. Mostly overridden if "Name" is a path to a BGSM/BGEM file.</add>
         <add name="Shader Flags 2" suffix="FO4" type="Fallout4ShaderPropertyFlags2" vercond="(User Version 2 &gt;= 130) &amp;&amp; (User Version 2 &lt; 132)" default="1">Fallout 4 Shader Flags. Mostly overridden if "Name" is a path to a BGSM/BGEM file.</add>
         <add name="Num Shader Flags 1" type="uint" vercond="(User Version 2 &gt;= 132)" cond="Name" />
-        <add name="Num Shader Flags 2" type="uint" vercond="(User Version 2 &gt= 152)" cond="Name" />
+        <add name="Num Shader Flags 2" type="uint" vercond="(User Version 2 &gt;= 152)" cond="Name" />
         <add name="Shader Flag Array 1" type="BSShader1CRC32" arr1="Num Shader Flags 1" vercond="(User Version 2 &gt;= 132)" cond="Name" />
         <add name="Shader Flag Array 2" type="BSShader2CRC32" arr1="Num Shader Flags 2" vercond="(User Version 2 &gt;= 152)" cond="Name" />
         <add name="UV Offset" type="TexCoord" vercond="(User Version 2 &lt;= 130)">Offset UVs</add>
@@ -5808,7 +5808,7 @@
         <add name="Shader Flags 1" suffix="FO4" type="Fallout4ShaderPropertyFlags1" default="2147483648" vercond="(User Version 2 &gt;= 130) &amp;&amp; (User Version 2 &lt; 132)" />
         <add name="Shader Flags 2" suffix="FO4" type="Fallout4ShaderPropertyFlags2" default="32" vercond="(User Version 2 &gt;= 130) &amp;&amp; (User Version 2 &lt; 132)" />
         <add name="Num Shader Flags 1" type="uint" vercond="(User Version 2 &gt;= 132)" cond="Name" />
-        <add name="Num Shader Flags 2" type="uint" vercond="(User Version 2 &gt= 152)" cond="Name" />
+        <add name="Num Shader Flags 2" type="uint" vercond="(User Version 2 &gt;= 152)" cond="Name" />
         <add name="Shader Flag Array 1" type="BSShader1CRC32" arr1="Num Shader Flags 1" vercond="(User Version 2 &gt;= 132)" cond="Name" />
         <add name="Shader Flag Array 2" type="BSShader2CRC32" arr1="Num Shader Flags 2" vercond="(User Version 2 &gt;= 152)" cond="Name" />
         <add name="UV Offset" type="TexCoord" vercond="(User Version 2 &lt;= 130)">Offset UVs</add>
@@ -5874,7 +5874,7 @@
         <add name="Shader Flags 1" type="SkyrimShaderPropertyFlags1" vercond="(User Version 2 &lt; 132)"></add>
         <add name="Shader Flags 2" type="SkyrimShaderPropertyFlags2" vercond="(User Version 2 &lt; 132)"></add>
         <add name="Num Shader Flags 1" type="uint" vercond="(User Version 2 &gt;= 132)" />
-        <add name="Num Shader Flags 2" type="uint" vercond="(User Version 2 &gt= 152)" />
+        <add name="Num Shader Flags 2" type="uint" vercond="(User Version 2 &gt;= 152)" />
         <add name="Shader Flag Array 1" type="BSShader1CRC32" arr1="Num Shader Flags 1" vercond="(User Version 2 &gt;= 132)" />
         <add name="Shader Flag Array 2" type="BSShader2CRC32" arr1="Num Shader Flags 2" vercond="(User Version 2 &gt;= 152)" />
         <add name="UV Offset" type="TexCoord">Offset UVs. Seems to be unused, but it fits with the other Skyrim shader properties.</add>
@@ -5889,7 +5889,7 @@
         <add name="Shader Flags 1" type="SkyrimShaderPropertyFlags1" vercond="(User Version 2 &lt; 132)"></add>
         <add name="Shader Flags 2" type="SkyrimShaderPropertyFlags2" vercond="(User Version 2 &lt; 132)"></add>
         <add name="Num Shader Flags 1" type="uint" vercond="(User Version 2 &gt;= 132)" />
-        <add name="Num Shader Flags 2" type="uint" vercond="(User Version 2 &gt= 152)" />
+        <add name="Num Shader Flags 2" type="uint" vercond="(User Version 2 &gt;= 152)" />
         <add name="Shader Flag Array 1" type="BSShader1CRC32" arr1="Num Shader Flags 1" vercond="(User Version 2 &gt;= 132)" />
         <add name="Shader Flag Array 2" type="BSShader2CRC32" arr1="Num Shader Flags 2" vercond="(User Version 2 &gt;= 152)" />
         <add name="UV Offset" type="TexCoord">Offset UVs. Seems to be unused, but it fits with the other Skyrim shader properties.</add>
